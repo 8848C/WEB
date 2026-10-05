@@ -9,7 +9,7 @@ const { evaluate, setViewport, navigate } = makeHelpers(browser.send)
 
 try {
   await setViewport(1700, 1000)
-  await navigate('http://127.0.0.1:5173/home/lab.html', 2800)
+  await navigate('http://127.0.0.1:5173/lab.html', 2800)
 
   const info = await evaluate(`(() => {
     const out = {}

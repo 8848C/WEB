@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 线条与场的对齐度。
  *
  * 如果线条是流线，那么「线上每一段的切线方向」应该等于「该点的场方向」。
@@ -15,7 +15,7 @@ const { evaluate, setViewport, setMotion, navigate } = makeHelpers(browser.send)
 try {
   await setMotion('no-preference')
   await setViewport(1600, 900)
-  await navigate('http://127.0.0.1:5173/home/index.html', 4000)
+  await navigate('http://127.0.0.1:5173/index.html', 4000)
   await sleep(2500)
 
   // 必须先冻结动画：边跑边读会读到不同帧混在一起的撕裂状态

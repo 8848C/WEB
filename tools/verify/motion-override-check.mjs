@@ -19,7 +19,7 @@ import path from 'node:path'
 
 import { makeHelpers, openBrowser, sleep } from './cdp.mjs'
 
-const BASE = 'http://127.0.0.1:5173/home'
+const BASE = 'http://127.0.0.1:5173'
 const ROOT = path.resolve(import.meta.dirname, '..', '..')
 const ARTIFACTS = path.join(ROOT, 'artifacts')
 

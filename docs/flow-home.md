@@ -3,7 +3,7 @@
 `frontend/public/home/` 下的三个文件：`index.html` / `styles.css` / `main.js`。
 **零依赖、零构建**，双击 `index.html` 就能跑，也可以放进任何项目的静态目录。
 
-线上地址（开发服务器）：<http://127.0.0.1:5173/home/index.html>
+本地预览：<http://127.0.0.1:5173/index.html>（怎么起静态服务器见 README「跑起来」）
 
 ![首屏](flow-hero.png)
 

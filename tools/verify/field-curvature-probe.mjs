@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 分离测量：场的固有曲率 vs 流线的实际曲率。
  *
  * 沿一条流线以极小步长（1px）积分，量「每走 11.5px 方向转多少度」——
@@ -16,7 +16,7 @@ const { evaluate, setViewport, setMotion, navigate } = makeHelpers(browser.send)
 try {
   await setMotion('no-preference')
   await setViewport(1600, 900)
-  await navigate('http://127.0.0.1:5173/home/index.html', 4000)
+  await navigate('http://127.0.0.1:5173/index.html', 4000)
   await sleep(1500)
 
   const out = await evaluate(`(() => {

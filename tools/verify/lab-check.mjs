@@ -1,5 +1,5 @@
-﻿/**
- * 调参台（/home/lab.html）验证
+/**
+ * 调参台（/lab.html）验证
  *
  * 重点不是「面板长得对」，而是证明滑杆**真的驱动了作品**：
  *   · 把 preset.speed 拖到 0    -> 背景应该完全静止
@@ -15,7 +15,7 @@ import path from 'node:path'
 
 import { createRecorder, makeHelpers, openBrowser, sleep } from './cdp.mjs'
 
-const TARGET = process.argv[2] ?? 'http://127.0.0.1:5173/home/lab.html'
+const TARGET = process.argv[2] ?? 'http://127.0.0.1:5173/lab.html'
 const PROJECT_ROOT = path.resolve(import.meta.dirname, '..', '..')
 const ARTIFACTS = path.join(PROJECT_ROOT, 'artifacts')
 
