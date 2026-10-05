@@ -1,0 +1,21 @@
+{
+  "name": "kun-login-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Vue3 登录页：左侧 2/3 炫酷动效，右侧 1/3 登录界面",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4173 --host 127.0.0.1"
+  },
+  "dependencies": {
+    "pinia": "^3.0.4",
+    "vue": "^3.5.43",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.9",
+    "vite": "^7.3.6"
+  }
+}

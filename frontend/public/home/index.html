@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>ENTER THE FLOW — A Living Surface</title>
+    <meta
+      name="description"
+      content="An interactive field of drifting contour lines. Move, click, scroll — the surface answers slowly."
+    />
+    <meta name="theme-color" content="#ffffff" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='white'/><g fill='none' stroke='%2312181f' stroke-width='1' stroke-opacity='.55'><path d='M3 20c6-9 20-9 26 0'/><path d='M3 25c6-9 20-9 26 0'/><path d='M3 15c6-9 20-9 26 0'/></g></svg>"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <!-- 整个 viewport 就是画布 -->
+    <canvas id="flow" aria-hidden="true"></canvas>
+
+    <!-- 颗粒 + 极淡色洗，压在画布之上、文字之下 -->
+    <div class="surface" aria-hidden="true">
+      <span class="surface__grain" id="grain"></span>
+      <span class="surface__wash"></span>
+      <span class="surface__edge"></span>
+    </div>
+
+    <!-- ------------------------------ 顶部 ------------------------------ -->
+    <header class="topbar">
+      <a class="mark" href="#chapter-01">
+        <span class="mark__glyph" aria-hidden="true">
+          <svg viewBox="0 0 34 20" width="34" height="20">
+            <g fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.8">
+              <path d="M1 7c7-7 25-7 32 0" />
+              <path d="M1 13c7-7 25-7 32 0" />
+              <path d="M1 19c7-7 25-7 32 0" />
+            </g>
+          </svg>
+        </span>
+        <span class="mark__text">FLUID&nbsp;FIELD</span>
+        <span class="mark__num">/001</span>
+      </a>
+
+      <nav class="nav" aria-label="Sections">
+        <a class="nav__link" href="#chapter-01">SURFACE</a>
+        <a class="nav__link" href="#chapter-02">NOTES</a>
+        <a class="nav__link" href="#chapter-03">ARCHIVE</a>
+      </nav>
+
+      <button
+        class="menu-toggle"
+        id="menuToggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="menu"
+      >
+        <span class="menu-toggle__label">MENU</span>
+        <span class="menu-toggle__bars" aria-hidden="true"><i></i><i></i></span>
+      </button>
+    </header>
+
+    <!-- ------------------------------ 章节 ------------------------------ -->
+    <main class="document">
+      <!-- 01 -->
+      <section class="chapter" id="chapter-01">
+        <p class="label eyebrow" data-react style="--x: 6.5%; --y: 27%">WELCOME</p>
+
+        <h1 class="title" id="title" data-obstacle aria-label="Enter the flow">
+          <span class="word" aria-hidden="true"
+            ><span class="ch">E</span><span class="ch">N</span><span class="ch">T</span
+            ><span class="ch">E</span><span class="ch">R</span></span
+          >
+          <span class="word" aria-hidden="true"
+            ><span class="ch">T</span><span class="ch">H</span><span class="ch">E</span></span
+          >
+          <span class="word" aria-hidden="true"
+            ><span class="ch">F</span><span class="ch">L</span><span class="ch">O</span
+            ><span class="ch">W</span></span
+          >
+        </h1>
+
+        <p class="lede" data-obstacle data-react style="--x: 6.5%; --y: 55%">
+          A surface that answers to your hand — slowly, and always on its own terms.
+        </p>
+
+        <span class="label l-explore" data-react style="--x: 4%; --y: 79%">EXPLORE</span>
+        <span class="label l-index" data-react style="--x: 25%; --y: 17%">01</span>
+        <span class="label l-year" data-react style="--x: 84%; --y: 18%">2026</span>
+        <span class="label l-territory" data-react style="--x: 68%; --y: 78%">
+          UNKNOWN&nbsp;TERRITORY
+        </span>
+
+        <span class="hairline" style="--x: 52%; --y: 64%; --w: 15vw" aria-hidden="true"></span>
+      </section>
+
+      <!-- 02 -->
+      <section class="chapter" id="chapter-02">
+        <p class="label l-index" data-react style="--x: 88%; --y: 13%">02</p>
+
+        <p class="note" data-obstacle data-react style="--x: 8%; --y: 24%">
+          Every line here is the same water. Push it and the push travels — a hand's width
+          away, then further, then it forgets.
+        </p>
+
+        <span class="label l-still" data-react style="--x: 61%; --y: 33%">STILL&nbsp;WATER</span>
+        <span class="label l-slow" data-react style="--x: 7%; --y: 84%">SLOW</span>
+
+        <!-- 文字沿曲线排布 -->
+        <svg class="arclabel" viewBox="0 0 1000 260" aria-hidden="true">
+          <defs>
+            <path id="arcPath" d="M14 214C250 62 750 62 986 214" fill="none" />
+          </defs>
+          <text class="arclabel__text">
+            <textPath href="#arcPath" startOffset="5%">
+              THE FIELD IS LISTENING · DRIFT SLOWLY · NOTHING HERE IS URGENT
+            </textPath>
+          </text>
+        </svg>
+      </section>
+
+      <!-- 03 -->
+      <section class="chapter" id="chapter-03">
+        <p class="label l-index" data-react style="--x: 10%; --y: 15%">03</p>
+
+        <p class="outro" data-obstacle data-react style="--x: 30%; --y: 40%">
+          The surface keeps no record of where you touched it.
+        </p>
+
+        <span class="label l-open" data-react style="--x: 54%; --y: 71%">
+          OPEN&nbsp;FIELD&nbsp;/&nbsp;SINCE&nbsp;2026
+        </span>
+
+        <a class="signal" href="#chapter-01" data-react style="--x: 64%; --y: 84%">
+          <span class="signal__dot" aria-hidden="true"></span>
+          RETURN&nbsp;TO&nbsp;SURFACE
+        </a>
+      </section>
+    </main>
+
+    <!-- ------------------------------ 底部 ------------------------------ -->
+    <footer class="footbar">
+      <span class="footbar__meta">N&nbsp;52°31′&nbsp;·&nbsp;E&nbsp;013°24′</span>
+
+      <span class="footbar__scroll" aria-hidden="true">
+        <span class="footbar__scroll-label">SCROLL</span>
+        <span class="footbar__scroll-track"><i></i></span>
+      </span>
+
+      <span class="footbar__chapter"><b id="chapterReadout">01</b>&nbsp;/&nbsp;03</span>
+    </footer>
+
+    <!-- ------------------------------ MENU ------------------------------ -->
+    <div class="menu" id="menu" hidden>
+      <nav class="menu__inner" aria-label="Menu">
+        <a class="menu__item" href="#chapter-01"><span>01</span>SURFACE</a>
+        <a class="menu__item" href="#chapter-02"><span>02</span>FIELD NOTES</a>
+        <a class="menu__item" href="#chapter-03"><span>03</span>ARCHIVE</a>
+        <a class="menu__item" href="#chapter-03"><span>04</span>SIGNAL</a>
+      </nav>
+      <p class="menu__foot">UNKNOWN TERRITORY — 2026</p>
+    </div>
+
+    <script src="main.js"></script>
+  </body>
+</html>

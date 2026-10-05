@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FLOW LAB · 调参台</title>
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="lab.css" />
+  </head>
+
+  <body>
+    <!-- 真实的页面原样跑在这里，面板只是套在外面 -->
+    <div class="stage" id="stage">
+      <div class="frame-wrap" id="frameWrap">
+        <iframe id="frame" src="index.html" title="ENTER THE FLOW"></iframe>
+      </div>
+    </div>
+
+    <button class="reopen" id="reopen" hidden>LAB</button>
+
+    <aside class="panel" id="panel">
+      <header class="panel__head">
+        <div class="panel__title">
+          <strong>FLOW&nbsp;LAB</strong>
+          <span id="presetName">—</span>
+        </div>
+        <button class="icon" id="collapse" title="收起面板（Esc）">✕</button>
+      </header>
+
+      <!--
+        系统开着「减少动态效果」时页面会按无障碍规范进静帧，
+        滑杆怎么拖都没反应。必须显式说明原因，并给一条绕开的通道。
+      -->
+      <div class="notice" id="motionNotice" hidden>
+        <p class="notice__text" id="motionNoticeText"></p>
+        <div class="row row--wrap">
+          <button id="forceMotion">强制动态</button>
+          <button id="followSystem">跟随系统</button>
+        </div>
+      </div>
+
+      <!-- 固定工具条：这几个是高频操作，不跟着滚 -->
+      <div class="toolbar">
+        <div class="row row--wrap" id="viewportRow">
+          <button data-view="fit" class="on">适应窗口</button>
+          <button data-view="1600x900">1600×900</button>
+          <button data-view="1440x900">1440×900</button>
+          <button data-view="1280x800">1280×800</button>
+          <button data-view="834x1112">834×1112</button>
+          <button data-view="390x844">390×844</button>
+        </div>
+
+        <div class="row">
+          <button id="chapterPrev" title="上一章">◀</button>
+          <span class="chapter" id="chapterLabel">01</span>
+          <button id="chapterNext" title="下一章">▶</button>
+          <label class="check">
+            <input type="checkbox" id="scrollWithChapter" />
+            滚过去
+          </label>
+        </div>
+
+        <div class="row row--wrap">
+          <button id="pauseBtn">暂停</button>
+          <button id="hideTextBtn">隐藏文字</button>
+          <button id="resetBtn">恢复默认</button>
+          <label class="seed">seed <input type="number" id="seedInput" value="0" step="1" /></label>
+          <button id="seedBtn">换地形</button>
+        </div>
+      </div>
+
+      <!-- 参数分组用选项卡：336px 宽的面板里，折叠面板会把参数区挤没 -->
+      <nav class="tabs" id="tabs" aria-label="参数分组"></nav>
+
+      <div class="scroll" id="scroll">
+        <div id="controls"></div>
+
+        <section class="block">
+          <h2>参数 JSON</h2>
+          <div class="row row--wrap">
+            <button id="exportBtn">导出</button>
+            <button id="importBtn">应用</button>
+            <button id="copyBtn">复制</button>
+          </div>
+          <textarea
+            id="json"
+            spellcheck="false"
+            placeholder='{ "preset": { "speed": 30 }, "tuning": { "ink": 1.2 } }'
+          ></textarea>
+          <p class="status" id="ioStatus"></p>
+        </section>
+      </div>
+
+      <!-- 实时指标固定在底部：拖滑杆的时候要一直看得见 -->
+      <section class="metrics-wrap">
+        <div class="metrics" id="metrics"></div>
+      </section>
+    </aside>
+
+    <script src="lab.js"></script>
+  </body>
+</html>

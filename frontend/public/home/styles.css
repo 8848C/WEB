@@ -1,0 +1,755 @@
+/* ==========================================================================
+   ENTER THE FLOW — a living surface
+   白纸、极细等高线、几乎不动的时间。克制是这里唯一的规则。
+   ========================================================================== */
+
+:root {
+  --paper: #ffffff;
+
+  /* 墨色只用一档，靠透明度分层 */
+  --ink: #12181f;
+  --ink-60: rgba(18, 24, 31, 0.6);
+  --ink-42: rgba(18, 24, 31, 0.42);
+  --ink-30: rgba(18, 24, 31, 0.3);
+  --ink-16: rgba(18, 24, 31, 0.16);
+  --hair: rgba(18, 24, 31, 0.12);
+
+  --font-sans: "Inter", "Helvetica Neue", Helvetica, "Segoe UI", system-ui, -apple-system,
+    sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Mono", Menlo, Consolas,
+    monospace;
+
+  --track-wide: 0.34em;
+  --gutter: clamp(20px, 3.4vw, 46px);
+
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-snap-type: y proximity;
+  background: var(--paper);
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgba(18, 24, 31, 0.09);
+}
+
+:focus-visible {
+  outline: 1px solid var(--ink-42);
+  outline-offset: 5px;
+}
+
+/* --------------------------------------------------------------------------
+   画布 + 表面层
+   -------------------------------------------------------------------------- */
+
+#flow {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.surface {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* 极细颗粒，给纯白一点纸的质地 */
+.surface__grain {
+  position: absolute;
+  inset: -50%;
+  display: block;
+  background-repeat: repeat;
+  background-size: 128px 128px;
+  opacity: 0.2;
+  mix-blend-mode: multiply;
+}
+
+/* 区域色洗：克制到几乎只是白里的一点温度 */
+.surface__wash {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background:
+    radial-gradient(58% 46% at 88% 8%, rgba(14, 165, 198, 0.05), transparent 68%),
+    radial-gradient(52% 44% at 6% 92%, rgba(124, 92, 220, 0.045), transparent 70%),
+    radial-gradient(40% 34% at 62% 58%, rgba(56, 130, 214, 0.03), transparent 72%);
+}
+
+/* 四边的极淡内收，避免画面「散掉」 */
+.surface__edge {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: radial-gradient(
+    130% 118% at 50% 46%,
+    transparent 58%,
+    rgba(18, 24, 31, 0.028) 100%
+  );
+}
+
+/* --------------------------------------------------------------------------
+   顶部
+   -------------------------------------------------------------------------- */
+
+.topbar {
+  position: fixed;
+  /* 必须高于 .menu（z-index 4）：否则 MENU 覆盖层一打开就把顶栏盖住，
+     右上角的 CLOSE 按钮点都点不到，菜单只能靠 Esc 关。 */
+  z-index: 5;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: clamp(18px, 2.4vw, 30px) var(--gutter);
+}
+
+.mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  color: var(--ink-60);
+  text-decoration: none;
+  transition: color 0.6s var(--ease);
+}
+
+.mark:hover {
+  color: var(--ink);
+}
+
+.mark__glyph {
+  display: block;
+  color: var(--ink-42);
+  transition: color 0.6s var(--ease);
+}
+
+.mark:hover .mark__glyph {
+  color: var(--ink-60);
+}
+
+.mark__text,
+.mark__num {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: var(--track-wide);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.mark__num {
+  color: var(--ink-30);
+}
+
+.nav {
+  display: flex;
+  gap: clamp(18px, 2.6vw, 42px);
+  
+
+}
+
+.nav__link {
+  position: relative;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: var(--track-wide);
+  text-transform: uppercase;
+  color: var(--ink-42);
+  text-decoration: none;
+  transition: color 0.6s var(--ease);
+}
+
+.nav__link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -7px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  opacity: 0.4;
+  transition: transform 0.75s var(--ease);
+}
+
+.nav__link:hover {
+  color: var(--ink);
+}
+
+.nav__link:hover::after {
+  transform: scaleX(1);
+}
+
+.menu-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border: 0;
+  background: none;
+  color: var(--ink-60);
+  cursor: pointer;
+  transition: color 0.6s var(--ease);
+}
+
+.menu-toggle:hover {
+  color: var(--ink);
+}
+
+.menu-toggle__label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: var(--track-wide);
+  text-transform: uppercase;
+}
+
+.menu-toggle__bars {
+  display: grid;
+  gap: 4px;
+  width: 18px;
+}
+
+.menu-toggle__bars i {
+  display: block;
+  height: 1px;
+  background: currentColor;
+  transform-origin: left center;
+  transition: transform 0.7s var(--ease), opacity 0.7s var(--ease);
+}
+
+body.is-menu-open .menu-toggle__bars i:first-child {
+  transform: translateY(2.5px) rotate(13deg) scaleX(0.78);
+}
+
+body.is-menu-open .menu-toggle__bars i:last-child {
+  transform: translateY(-2.5px) rotate(-13deg) scaleX(0.78);
+}
+
+/* --------------------------------------------------------------------------
+   文档与章节
+   -------------------------------------------------------------------------- */
+
+.document {
+  position: relative;
+  z-index: 2;
+}
+
+.chapter {
+  position: relative;
+  height: 100vh;
+  height: 100svh;
+  scroll-snap-align: start;
+}
+
+/* 所有漂浮元素统一用 --x / --y 定位，天然不落在网格上 */
+.label,
+.lede,
+.note,
+.outro,
+.signal,
+.eyebrow {
+  position: absolute;
+  left: var(--x, 10%);
+  top: var(--y, 50%);
+}
+
+/* 极细辅助文字：像悬浮在空间里，不像导航 */
+.label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 400;
+  letter-spacing: var(--track-wide);
+  text-transform: uppercase;
+  color: var(--ink-42);
+  white-space: nowrap;
+  will-change: transform;
+  transition: color 0.8s var(--ease);
+}
+
+.label.l-index {
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  color: var(--ink-30);
+}
+
+.eyebrow {
+  color: var(--ink-60);
+  font-size: 11px;
+  letter-spacing: 0.44em;
+}
+
+.eyebrow::before {
+  content: "";
+  position: absolute;
+  left: -3.2em;
+  top: 50%;
+  width: 2.4em;
+  height: 1px;
+  background: var(--ink-16);
+}
+
+/* --------------------------------------------------------------------------
+   主标题
+   -------------------------------------------------------------------------- */
+
+.title {
+  position: absolute;
+  left: var(--gutter);
+  top: 37%;
+  margin: 0;
+  font-size: clamp(26px, 3.2vw, 50px);
+  font-weight: 300;
+  line-height: 1.24;
+  color: var(--ink);
+  /* 补偿 letter-spacing 在行尾留下的空隙，让左对齐的视觉边界准确 */
+  margin-right: -0.42em;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.word {
+  display: inline-block;
+}
+
+.word + .word {
+  margin-left: 0.52em;
+}
+
+.ch {
+  display: inline-block;
+  letter-spacing: 0.42em;
+  will-change: transform, opacity;
+}
+
+/* --------------------------------------------------------------------------
+   正文型小段落
+   -------------------------------------------------------------------------- */
+
+.lede,
+.note,
+.outro {
+  margin: 0;
+  font-weight: 300;
+  color: var(--ink-60);
+  letter-spacing: 0.045em;
+  will-change: transform;
+}
+
+.lede {
+  max-width: 33ch;
+  font-size: 13.5px;
+  line-height: 2;
+}
+
+.note {
+  max-width: 30ch;
+  font-size: 13.5px;
+  line-height: 2.05;
+}
+
+.outro {
+  max-width: 26ch;
+  font-size: 15px;
+  line-height: 1.95;
+}
+
+/* --------------------------------------------------------------------------
+   装饰与链接
+   -------------------------------------------------------------------------- */
+
+.hairline {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w, 12vw);
+  height: 1px;
+  background: linear-gradient(90deg, var(--ink-16), transparent);
+  transform-origin: left center;
+}
+
+.signal {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: var(--track-wide);
+  text-transform: uppercase;
+  color: var(--ink-42);
+  text-decoration: none;
+  white-space: nowrap;
+  will-change: transform;
+  transition: color 0.7s var(--ease);
+}
+
+.signal:hover {
+  color: var(--ink);
+}
+
+.signal__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 0 currentColor;
+  animation: breathe 5.5s var(--ease) infinite;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(18, 24, 31, 0.16);
+    opacity: 0.55;
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(18, 24, 31, 0);
+    opacity: 1;
+  }
+}
+
+/* 沿弧线排布的文字 */
+.arclabel {
+  position: absolute;
+  left: 6%;
+  top: 50%;
+  width: 88%;
+  height: auto;
+  overflow: visible;
+}
+
+.arclabel__text {
+  fill: var(--ink-30);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------------------
+   底部
+   -------------------------------------------------------------------------- */
+
+.footbar {
+  position: fixed;
+  z-index: 3;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: clamp(16px, 2.2vw, 26px) var(--gutter);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: var(--track-wide);
+  text-transform: uppercase;
+  color: var(--ink-30);
+  pointer-events: none;
+}
+
+.footbar__scroll {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footbar__scroll-label {
+  color: var(--ink-30);
+}
+
+.footbar__scroll-track {
+  position: relative;
+  display: block;
+  width: 46px;
+  height: 1px;
+  background: var(--ink-16);
+  overflow: hidden;
+}
+
+.footbar__scroll-track i {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: var(--ink-42);
+  transform-origin: left center;
+  animation: track 6.5s var(--ease) infinite;
+}
+
+@keyframes track {
+  0% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  22% {
+    opacity: 1;
+  }
+  58% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
+
+.footbar__chapter b {
+  font-weight: 400;
+  color: var(--ink-60);
+}
+
+/* --------------------------------------------------------------------------
+   MENU
+   -------------------------------------------------------------------------- */
+
+.menu {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  display: grid;
+  align-content: center;
+  gap: clamp(30px, 5vw, 70px);
+  padding: var(--gutter);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: saturate(120%) blur(18px);
+  -webkit-backdrop-filter: saturate(120%) blur(18px);
+  opacity: 0;
+  transition: opacity 0.85s var(--ease);
+}
+
+.menu[hidden] {
+  display: none;
+}
+
+.menu.is-visible {
+  opacity: 1;
+}
+
+.menu__inner {
+  display: grid;
+  gap: clamp(6px, 1.1vw, 14px);
+  justify-items: start;
+  margin-left: clamp(0px, 8vw, 140px);
+}
+
+.menu__item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 22px;
+  font-size: clamp(24px, 3.4vw, 46px);
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  color: var(--ink-60);
+  text-decoration: none;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: color 0.7s var(--ease), opacity 0.9s var(--ease), transform 0.9s var(--ease);
+  transition-delay: calc(var(--i, 0) * 70ms);
+}
+
+.menu.is-visible .menu__item {
+  opacity: 1;
+  transform: none;
+}
+
+.menu__item span {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: var(--track-wide);
+  color: var(--ink-30);
+}
+
+.menu__item:hover {
+  color: var(--ink);
+}
+
+.menu__foot {
+  margin: 0 0 0 clamp(0px, 8vw, 140px);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: var(--track-wide);
+  text-transform: uppercase;
+  color: var(--ink-30);
+}
+
+/* --------------------------------------------------------------------------
+   响应式：移动端保留构图与交互，但降低密度
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .nav {
+    display: none;
+  }
+
+  .chapter {
+    height: 100svh;
+  }
+
+  .title {
+    top: 30%;
+    font-size: clamp(23px, 6.6vw, 34px);
+    white-space: normal;
+    max-width: 12ch;
+  }
+
+  .lede {
+    top: 50% !important;
+    left: 6.5% !important;
+    max-width: 26ch;
+    font-size: 12.5px;
+  }
+
+  .l-explore {
+    --x: 6% !important;
+    --y: 68% !important;
+  }
+
+  .l-index {
+    --x: 8% !important;
+  }
+
+  .l-year {
+    --x: 72% !important;
+    --y: 21% !important;
+  }
+
+  .l-territory {
+    --x: 6% !important;
+    --y: 80% !important;
+  }
+
+  .hairline {
+    display: none;
+  }
+
+  .note {
+    --x: 8% !important;
+    --y: 22% !important;
+    max-width: 24ch;
+    font-size: 12.5px;
+  }
+
+  .l-still {
+    --x: 8% !important;
+    --y: 46% !important;
+  }
+
+  .l-slow {
+    --x: 7% !important;
+    --y: 84% !important;
+  }
+
+  .arclabel {
+    left: 4%;
+    top: 62%;
+    width: 92%;
+  }
+
+  .arclabel__text {
+    font-size: 9.5px;
+    letter-spacing: 0.3em;
+  }
+
+  .outro {
+    --x: 8% !important;
+    --y: 34% !important;
+    font-size: 13.5px;
+  }
+
+  .l-open {
+    --x: 8% !important;
+    --y: 62% !important;
+    white-space: normal;
+    max-width: 18ch;
+  }
+
+  .signal {
+    --x: 8% !important;
+    --y: 78% !important;
+  }
+
+  .footbar__meta {
+    display: none;
+  }
+
+  .menu__inner,
+  .menu__foot {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .mark__num {
+    display: none;
+  }
+
+  .title {
+    letter-spacing: 0;
+  }
+
+  .footbar {
+    justify-content: space-between;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   尊重「减少动态效果」：CSS 动画全部停下，流场由 JS 出一帧静帧
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+    scroll-snap-type: none;
+  }
+
+  .signal__dot,
+  .footbar__scroll-track i {
+    animation: none;
+  }
+
+  .footbar__scroll-track i {
+    transform: scaleX(1);
+  }
+
+  .menu,
+  .menu__item,
+  .label,
+  .nav__link::after {
+    transition-duration: 0.01ms;
+  }
+}
