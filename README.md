@@ -1,5 +1,8 @@
 ﻿# ENTER THE FLOW
 
+> **在线看** — <https://8848c.github.io/WEB/index.html>（作品）
+> · <https://8848c.github.io/WEB/lab.html>（FLOW LAB 调参台）
+
 一件会呼吸的交互式数字作品：纯白纸上 94 根发丝般的流线，缓慢地穿过整个画面。
 鼠标划过去像手掠过水面 —— 扰动先影响近处的线，再一点点「泡」到远处；
 手离开后场约 4 秒慢慢忘记。滚动会换掉整个场的方向、疏密与色温，像进入另一个空间。
@@ -15,7 +18,14 @@
 
 ## 跑起来
 
-直接双击 `index.html` 就行 —— 没有构建步骤，没有依赖，没有网络请求。
+**线上**（GitHub Pages，从 `main` 分支根目录发布）：
+
+| 页面 | 地址 |
+| --- | --- |
+| 作品 | <https://8848c.github.io/WEB/index.html> |
+| 调参台 | <https://8848c.github.io/WEB/lab.html> |
+
+**本地**：直接双击 `index.html` 就行 —— 没有构建步骤，没有依赖，没有网络请求。
 
 要看调参台，或者要跑验收脚本（它们用 http 地址），起一个静态服务器：
 
@@ -112,6 +122,16 @@ node tools\verify\alignment-probe.mjs        # 线条切线 vs 场方向的夹�
 node tools\verify\lab-diag.mjs               # 调参台诊断
 node tools\verify\motion-strip.mjs           # 生成动感条
 ```
+
+这几个脚本都接受一个 URL 参数，所以可以**直接对着线上地址跑**：
+
+```powershell
+node tools\verify\home-check.mjs https://8848c.github.io/WEB/index.html
+node tools\verify\lab-check.mjs  https://8848c.github.io/WEB/lab.html
+```
+
+线上实测：**首页 19/19、调参台 14/14**，两次都是 0 console 错误 / 0 未捕获异常
+（唯一的失败请求是浏览器自动去要域名根目录的 `favicon.ico`，与本作品无关）。
 
 流体那几项不是「看起来动了」，而是直接测物理量：
 
